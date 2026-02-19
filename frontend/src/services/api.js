@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'const API_URL = "https://event-rd6t.onrender.com/api";',
+    baseURL: 'const API_URL = "https://event-rd6t.onrender.com/api/";',
 });
 
 // Add the token to every request header

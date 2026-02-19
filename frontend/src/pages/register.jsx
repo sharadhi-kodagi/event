@@ -18,7 +18,7 @@ const RegisterForm = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/register/', formData);
+            const response = await axios.post('https://event-rd6t.onrender.com/api/register/', formData);
             
             showToast("Success! Your ticket will be emailed shortly.", "success");
             setFormData({ name: '', email: '', phone_number: '' });

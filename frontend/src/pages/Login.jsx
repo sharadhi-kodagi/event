@@ -15,7 +15,7 @@ const Login = () => {
         setIsLoading(true);
         setError('');
         try {
-            const res = await API.post('http://127.0.0.1:8000/api-token-auth/', credentials);
+            const res = await API.post('https://event-rd6t.onrender.com/api-token-auth/', credentials);
             localStorage.setItem('admin_token', res.data.token);
             navigate('/dashboard');
         } catch (err) {
