@@ -10,7 +10,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # Production mode
 DEBUG = False
 
-ALLOWED_HOSTS = ['.onrender.com']
+ALLOWED_HOSTS = ['event-rd6t.onrender.com', '.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -105,3 +105,4 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
