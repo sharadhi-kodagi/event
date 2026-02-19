@@ -39,7 +39,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    # Add your frontend URL after deployment
+   "https://event-frontend-fmwn.onrender.com",
 ]
 
 REST_FRAMEWORK = {
@@ -105,4 +105,5 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
