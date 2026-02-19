@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .ticket-card {
+            max-width: 400px;
+            margin: 20px auto;
+            border: 2px solid #6366f1;
+            border-radius: 20px;
+            font-family: 'Helvetica', sans-serif;
+            overflow: hidden;
+            text-align: center;
+        }
+        .header { background: #6366f1; color: white; padding: 20px; }
+        .content { padding: 30px; background: white; }
+        .qr-code { background: #f8fafc; padding: 20px; border-radius: 15px; display: inline-block; }
+        .user-code { font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #1e293b; margin: 15px 0; }
+        .footer { font-size: 12px; color: #64748b; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="ticket-card">
+        <div class="header">
+            <h2 style="margin:0;">{{ event_name }}</h2>
+            <p style="margin:5px 0 0 0;">Official Entry Ticket</p>
+        </div>
+        <div class="content">
+            <p>Hi <strong>{{ attendee_name }}</strong>,</p>
+            <p>Scan the code below at the entrance:</p>
+            <div class="qr-code">
+<img src="https://quickchart.io/qr?text={{ unique_token }}&size=200" alt="QR Code">
+            </div>
+            <div class="user-code">{{ user_code }}</div>
+            <p style="font-size: 14px; color: #475569;">Show this to the staff at the gate.</p>
+        </div>
+        <div class="footer">
+            This ticket was sent to {{ email }}.<br>
+            Please do not share this QR code with anyone.
+        </div>
+    </div>
+</body>
+</html>
