@@ -6,7 +6,7 @@ import io
 from django.conf import settings
 import resend
 
-# Initialize Resend API (v3.x syntax)
+# Initialize Resend API (v2.x syntax - CORRECTED)
 resend.api_key = settings.RESEND_API_KEY
 
 def generate_qr_code(attendee):
@@ -63,7 +63,7 @@ User Code : {attendee.user_code}
 Email     : {attendee.email}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-A QR code image is attached to this email (filename: {attendee.user_code}.png).
+A QR code image is attached (filename: {attendee.user_code}.png).
 Show this QR code at the entrance gate OR provide your User Code above.
 
 We look forward to seeing you at the event! 🎉
@@ -73,18 +73,16 @@ Event Team
 """
     
     try:
-        # Send via Resend API v3.x (FREE - works on Render Free tier!)
+        # Send via Resend API v2.x (CORRECTED SYNTAX)
         email = resend.Emails.send({
             "from": settings.DEFAULT_FROM_EMAIL,
             "to": [attendee.email.strip()],
             "subject": subject,
             "text": body,
-            "attachments": [
-                {
-                    "filename": f"{attendee.user_code}.png",
-                    "content": qr_base64,
-                }
-            ]
+            "attachments": [{
+                "filename": f"{attendee.user_code}.png",
+                "content": qr_base64,
+            }]
         })
         
         print(f"✅ Email sent to {attendee.email} | ID: {email['id']}")
