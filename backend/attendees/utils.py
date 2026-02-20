@@ -6,7 +6,7 @@ import io
 from django.conf import settings
 import resend
 
-# Initialize Resend API
+# Initialize Resend API (v3.x syntax)
 resend.api_key = settings.RESEND_API_KEY
 
 def generate_qr_code(attendee):
@@ -51,7 +51,7 @@ def send_ticket_email(attendee):
         qr_bytes = f.read()
         qr_base64 = base64.b64encode(qr_bytes).decode('utf-8')
     
-    # Prepare email (same info as original)
+    # Prepare email content
     subject = f"Your Entry Pass for {event.name} - {attendee.user_code}"
     body = f"""Hi {attendee.name},
 
@@ -73,8 +73,8 @@ Event Team
 """
     
     try:
-        # Send via Resend API (FREE - works on Render Free tier!)
-        params = {
+        # Send via Resend API v3.x (FREE - works on Render Free tier!)
+        email = resend.Emails.send({
             "from": settings.DEFAULT_FROM_EMAIL,
             "to": [attendee.email.strip()],
             "subject": subject,
@@ -83,12 +83,9 @@ Event Team
                 {
                     "filename": f"{attendee.user_code}.png",
                     "content": qr_base64,
-                    "content_type": "image/png"
                 }
             ]
-        }
-        
-        email = resend.Emails.send(params)
+        })
         
         print(f"✅ Email sent to {attendee.email} | ID: {email['id']}")
         return True
