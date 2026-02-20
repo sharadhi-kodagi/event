@@ -36,6 +36,13 @@ def send_ticket_email(attendee):
     Send ticket email with QR code using Resend API (FREE)
     Same function signature as original - no other code changes needed!
     """
+    from .models import Event
+    
+    # Get active event
+    event = Event.objects.filter(is_active=True).first()
+    if not event:
+        raise ValueError("No active event found")
+    
     # Generate QR code (same as original)
     qr_path = generate_qr_code(attendee)
     
@@ -45,8 +52,25 @@ def send_ticket_email(attendee):
         qr_base64 = base64.b64encode(qr_bytes).decode('utf-8')
     
     # Prepare email (same info as original)
-    subject = f"Your Entry Pass for the Event - {attendee.user_code}"
-    body = f"Hi {attendee.name},\n\nPlease find your QR code attached. Show this at the entrance and lunch counter."
+    subject = f"Your Entry Pass for {event.name} - {attendee.user_code}"
+    body = f"""Hi {attendee.name},
+
+Thank you for registering for {event.name}!
+
+Your ticket details:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+User Code : {attendee.user_code}
+Email     : {attendee.email}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A QR code image is attached to this email (filename: {attendee.user_code}.png).
+Show this QR code at the entrance gate OR provide your User Code above.
+
+We look forward to seeing you at the event! 🎉
+
+Best regards,
+Event Team
+"""
     
     try:
         # Send via Resend API (FREE - works on Render Free tier!)
