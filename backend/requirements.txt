@@ -20,4 +20,4 @@ gunicorn==21.2.0
 dj-database-url==1.2.0
 whitenoise==6.5.0
 django-grappelli==4.0.3
-resend==3.3.0
+resend==2.22.0
