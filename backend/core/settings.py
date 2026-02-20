@@ -109,6 +109,11 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- Resend Email Configuration ---
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+DEFAULT_FROM_EMAIL = "redhatcat727@gmail.com" 
+
+
 
 
 
