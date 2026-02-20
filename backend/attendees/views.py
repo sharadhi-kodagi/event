@@ -329,7 +329,7 @@ def resend_ticket_view(request, attendee_id):
         gc.collect() 
 
         # 4. Prepare Email
-        subject = f"Your Entry Pass for {settings.EVENT_NAME}"
+        subject = f"Your Entry Pass for Rotract Event"
         email = EmailMessage(
             subject,
             f"Hello {attendee.name}, find your ticket attached.",
@@ -400,3 +400,4 @@ def window_stats_detail(request, window_id):
         "attendees": data
 
     })
+
