@@ -1,10 +1,18 @@
+# attendees/utils.py
 import qrcode
 import os
+import base64
+import io
 from django.conf import settings
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
+import resend
+
+# Initialize Resend API
+resend.api_key = settings.RESEND_API_KEY
 
 def generate_qr_code(attendee):
+    """
+    Generate QR code and save to file (same as original)
+    """
     # Data encoded in QR is the unique token
     qr_data = str(attendee.unique_token)
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
@@ -24,20 +32,43 @@ def generate_qr_code(attendee):
     return file_path
 
 def send_ticket_email(attendee):
+    """
+    Send ticket email with QR code using Resend API (FREE)
+    Same function signature as original - no other code changes needed!
+    """
+    # Generate QR code (same as original)
     qr_path = generate_qr_code(attendee)
     
+    # Read QR image as base64 for attachment
+    with open(qr_path, 'rb') as f:
+        qr_bytes = f.read()
+        qr_base64 = base64.b64encode(qr_bytes).decode('utf-8')
+    
+    # Prepare email (same info as original)
     subject = f"Your Entry Pass for the Event - {attendee.user_code}"
     body = f"Hi {attendee.name},\n\nPlease find your QR code attached. Show this at the entrance and lunch counter."
     
-    email = EmailMessage(
-        subject,
-        body,
-        settings.EMAIL_HOST_USER,
-        [attendee.email],
-    )
+    try:
+        # Send via Resend API (FREE - works on Render Free tier!)
+        params = {
+            "from": settings.DEFAULT_FROM_EMAIL,
+            "to": [attendee.email.strip()],
+            "subject": subject,
+            "text": body,
+            "attachments": [
+                {
+                    "filename": f"{attendee.user_code}.png",
+                    "content": qr_base64,
+                    "content_type": "image/png"
+                }
+            ]
+        }
+        
+        email = resend.Emails.send(params)
+        
+        print(f"✅ Email sent to {attendee.email} | ID: {email['id']}")
+        return True
     
-    # Attach the QR code image
-    with open(qr_path, 'rb') as f:
-        email.attach(f"{attendee.user_code}.png", f.read(), 'image/png')
-    
-    email.send()
+    except Exception as e:
+        print(f"❌ Failed to send email to {attendee.email}: {str(e)}")
+        raise
