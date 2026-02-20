@@ -13,6 +13,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['event-rd6t.onrender.com', '.onrender.com']
 
 INSTALLED_APPS = [
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,7 +24,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'attendees',
-    'grappelli',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +99,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
+EMAIL_TIMEOUT = 10  # Seconds. Prevents Gunicorn from timing out if Gmail is slow.
+EMAIL_USE_SSL = False # Explicitly set to False since you are using TLS
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -106,6 +108,7 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 
 
