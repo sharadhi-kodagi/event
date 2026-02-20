@@ -289,6 +289,11 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Attendee, Event
 from .utils import send_ticket_email # Reusing your existing email logic
+import qrcode
+import io
+import gc  # Garbage Collector
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 @api_view(['POST'])
 def send_individual_email(request, attendee_id):
@@ -304,18 +309,46 @@ def send_individual_email(request, attendee_id):
     
 @api_view(['POST'])
 def resend_ticket_view(request, attendee_id):
-    # 1. Get the attendee from the ID passed by React
     attendee = get_object_or_404(Attendee, id=attendee_id)
     
     try:
-        # 2. Call your utility with ONLY the attendee (as defined in utils.py)
-        send_ticket_email(attendee)
+        # 1. Create a SMALL QR code (box_size 5 instead of 10)
+        qr = qrcode.QRCode(version=1, box_size=5, border=2)
+        qr.add_data(str(attendee.unique_token))
+        qr.make(fit=True)
         
-        return Response({"message": f"Ticket sent to {attendee.email}!"}, status=200)
+        # 2. Use a context manager for the image to ensure it closes
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        image_data = buffer.getvalue()
+        
+        # 3. Explicitly delete heavy objects and clear RAM
+        del img
+        del qr
+        gc.collect() 
+
+        # 4. Prepare Email
+        subject = f"Your Entry Pass for {settings.EVENT_NAME}"
+        email = EmailMessage(
+            subject,
+            f"Hello {attendee.name}, find your ticket attached.",
+            settings.DEFAULT_FROM_EMAIL,
+            [attendee.email]
+        )
+        email.attach(f'ticket_{attendee.user_code}.png', image_data, 'image/png')
+        
+        # 5. Send
+        email.send(fail_silently=False)
+        
+        # 6. Final cleanup
+        buffer.close()
+        
+        return Response({"message": "Sent successfully!"})
+        
     except Exception as e:
-        # This will print the exact email error (like SMTP issues) in your terminal
-        print(f"Email Error: {e}") 
-        return Response({"error": "Failed to send email. Check server logs."}, status=500)
+        return Response({"error": str(e)}, status=500)
+        
     
 
 @api_view(['POST'])
@@ -365,4 +398,5 @@ def window_stats_detail(request, window_id):
     return Response({
         "window_name": window.name,
         "attendees": data
+
     })
